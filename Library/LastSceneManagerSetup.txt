@@ -1,0 +1,4 @@
+sceneSetups:
+- path: Assets/LeapMotion/Modules/InteractionEngine/Examples/8. Swap Grasp/Swap Grasp.unity
+  isLoaded: 1
+  isActive: 1

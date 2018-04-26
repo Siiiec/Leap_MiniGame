@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leap_MiniGame", "Leap_MiniGame.csproj", "{65875699-6ABC-F5BB-0A50-FC147D5075BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leap_MiniGame.Editor", "Leap_MiniGame.Editor.csproj", "{E7ACA8D4-4731-E4E5-645A-DF151D3A50DC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{65875699-6ABC-F5BB-0A50-FC147D5075BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65875699-6ABC-F5BB-0A50-FC147D5075BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65875699-6ABC-F5BB-0A50-FC147D5075BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65875699-6ABC-F5BB-0A50-FC147D5075BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7ACA8D4-4731-E4E5-645A-DF151D3A50DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7ACA8D4-4731-E4E5-645A-DF151D3A50DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7ACA8D4-4731-E4E5-645A-DF151D3A50DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7ACA8D4-4731-E4E5-645A-DF151D3A50DC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
