@@ -13,7 +13,6 @@ public class LeapDebuger : MonoBehaviour
     }
 
     public Text text;
-    public LeapServiceProvider leap;
     public LR lr = LR.L;
 
     private void Start()
@@ -55,7 +54,7 @@ public class LeapDebuger : MonoBehaviour
 
     Leap.Hand GetHand(LR lr)
     {
-        var hands = leap.CurrentFrame.Hands;
+        var hands = LeapHandAccessor.hands;
         return hands.FirstOrDefault(h => lr == LR.L ? h.IsLeft : h.IsRight);
     }
 }

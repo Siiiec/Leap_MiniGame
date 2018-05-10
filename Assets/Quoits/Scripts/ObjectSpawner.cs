@@ -7,8 +7,6 @@ public class ObjectSpawner : MonoBehaviour
 {
     public InteractionBehaviour prefab;
 
-    public Vector3 spawnPos = Vector3.zero;
-
     public void Spawn()
     {
         Spawn(10f);
@@ -16,6 +14,9 @@ public class ObjectSpawner : MonoBehaviour
 
     public void Spawn(float deleteTime)
     {
-        Instantiate(prefab, spawnPos, Quaternion.identity);
+        var obj = Instantiate(prefab, transform.position, Quaternion.identity);
+        Destroy(obj.gameObject, deleteTime);
     }
+
+    
 }
