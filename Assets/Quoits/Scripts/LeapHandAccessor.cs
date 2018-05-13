@@ -16,7 +16,7 @@ public class LeapHandAccessor {
         {
             if (s_leap == null)
             {
-                s_leap = MonoBehaviour.FindObjectOfType<LeapServiceProvider>();
+                s_leap = Object.FindObjectOfType<LeapServiceProvider>();
             }
 
             return s_leap;

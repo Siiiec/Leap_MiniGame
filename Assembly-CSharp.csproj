@@ -315,8 +315,9 @@
     <Compile Include="Assets\Quoits\Scripts\FacingUpwardCallbacks.cs" />
     <Compile Include="Assets\Quoits\Scripts\LeapDebuger.cs" />
     <Compile Include="Assets\Quoits\Scripts\LeapHandAccessor.cs" />
-    <Compile Include="Assets\Quoits\Scripts\LeapTracker.cs" />
     <Compile Include="Assets\Quoits\Scripts\ObjectSpawner.cs" />
+    <Compile Include="Assets\Quoits\Scripts\PinchObjSpawner.cs" />
+    <Compile Include="Assets\Quoits\Scripts\TEST\GraspingSpawner.cs" />
     <Compile Include="Assets\Quoits\Scripts\TEST\TEST_BeginEndGrasp.cs" />
     <Compile Include="Assets\Quoits\Scripts\TEST\TEST_InteractionManager.cs" />
     <Compile Include="Assets\Quoits\Scripts\TEST\TEST_ObjectCreator.cs" />
