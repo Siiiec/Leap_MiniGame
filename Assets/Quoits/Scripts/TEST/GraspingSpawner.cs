@@ -3,133 +3,113 @@ using System.Collections.Generic;
 using UnityEngine;
 using Leap.Unity.Interaction;
 using Leap.Unity.Examples;
+using Leap.Unity;
+using Leap;
+using Leap.Unity.Query;
+using System.Linq;
 
 public class GraspingSpawner : MonoBehaviour
 {
+    public float minScale = 0.05f;
+    public float maxScale = 0.2f;
 
-    public InteractionBehaviour objA, objB;
+    public InteractionBehaviour pinchArea, prefab;
 
-    public InteractionBehaviour prefab;
+    InteractionBehaviour intObj, graspingObj;
 
-    InteractionBehaviour intObj;
+    List<InteractionController> controllers;
 
-    InteractionHand leftHand;
-
-    InteractionHand rightHand;
-
-    bool _swapScheduled;
+    bool canInstantiate = true;
+    bool canScaling = false;
+    
 
     // Use this for initialization
     void Start()
     {
-        objA = GetComponent<InteractionBehaviour>();
-
+        pinchArea = GetComponent<InteractionBehaviour>();
         intObj = GetComponent<InteractionBehaviour>();
-        intObj.OnPerControllerGraspBegin += OnGraspBegin;
-        intObj.OnPerControllerGraspEnd += OnGraspEnd;
+        controllers = new List<InteractionController>();
 
-        PhysicsCallbacks.OnPostPhysics += onPostPhysics;
+
+        //PhysicsCallbacks.OnPrePhysics += OnPhysics;
     }
 
     // Update is called once per frame
     void Update()
     {
+        var right = LeapHandAccessor.right;
+        var left = LeapHandAccessor.left;
 
+        Transform(right, left);
+        
+        var grasping = intObj.graspingControllers;
+        if (grasping.Count == 2 && canInstantiate)
+        {
+            controllers = grasping.Query().ToList();
+            Spawn();
+        }
+
+        if (canScaling)
+            ResizeGraspingObject();
     }
 
-    void OnGraspBegin(InteractionController controller)
+    void Spawn()
     {
-        if (controller.isLeft)
+        graspingObj = Instantiate(prefab, transform.position, transform.rotation);
+        canInstantiate = false;
+        canScaling = true;
+
+        Swap(controllers, graspingObj);
+        graspingObj.OnGraspEnd += GraspEnded;
+    }
+
+    void ResizeGraspingObject()
+    {
+        if (graspingObj.graspingHands.Count == 2)
         {
-            if (leftHand == null)
-                leftHand = controller.intHand;
+            graspingObj.transform.localScale = Vector3.one * Mathf.Clamp(
+                Vector3.Distance(controllers[0].intHand.leapHand.GetPinchPosition(),
+                    controllers[1].intHand.leapHand.GetPinchPosition())
+                , minScale, maxScale);
         }
         else
-        {
-            if (rightHand == null)
-                rightHand = controller.intHand;
-        }
+            canScaling = false;
+    }
 
-        if (leftHand != null && rightHand != null)
+    void Transform(Hand right, Hand left)
+    {
+
+        if (right != null && left != null)
         {
-            objB = Instantiate(prefab, Vector3.zero, Quaternion.identity);
-            scheduleSwap();
+            //transform.position = UnityVectorExtension.ToVector3((right.StabilizedPalmPosition + left.StabilizedPalmPosition) / 2);
+            transform.position = Vector3.Lerp(right.GetPredictedPinchPosition(), left.GetPredictedPinchPosition(), 0.5f);
         }
     }
 
-    void OnGraspEnd(InteractionController controller)
+    void GraspEnded()
     {
-        if (controller.isLeft)
+        canInstantiate = true;
+        if (graspingObj.graspingControllers.Count == 0)
         {
-            if (leftHand.Equals(controller.intHand))
-                leftHand = null;
-        }
-        else
-        {
-            if (rightHand.Equals(controller.intHand))
-                rightHand = null;
+            canInstantiate = true;
+            controllers.Clear();
+            graspingObj.OnGraspEnd -= GraspEnded;
+            graspingObj.OnGraspStay -= GraspStay;
         }
     }
 
-    private void scheduleSwap()
+    void GraspStay()
     {
-        _swapScheduled = true;
+        if (graspingObj.graspingControllers.Count == 0)
+        {
+            graspingObj.transform.localScale = Vector3.one * 
+                controllers.Aggregate(Vector3.zero, (init, a) => { return init - a.intHand.position; }).magnitude;
+        }
     }
 
-    private void onPostPhysics()
+    void Swap(List<InteractionController> controllers, InteractionBehaviour toGrasping)
     {
-        //Swapping when both objects are grasped is unsupported
-        if (objA == null || objB == null) return;
-
-        if (objA.isGrasped && objB.isGrasped) { return; }
-
-        if (_swapScheduled && (objA.isGrasped || objB.isGrasped))
-        {
-
-            // Swap "a" for "b"; a will be whichever object is the grasped one.
-            InteractionBehaviour a, b;
-            if (objA.isGrasped)
-            {
-                a = objA;
-                b = objB;
-            }
-            else
-            {
-                a = objB;
-                b = objA;
-            }
-
-            // (Optional) Remember B's pose and motion to apply to A post-swap.
-            var bPose = new Pose(b.rigidbody.position, b.rigidbody.rotation);
-            var bVel = b.rigidbody.velocity;
-            var bAngVel = b.rigidbody.angularVelocity;
-
-            // Match the rigidbody pose of the originally held object before swapping.
-            // If it exists, always use the latestScheduledGraspPose to perform a SwapGrasp!
-            // This prevents subtle slippage with non-kinematic objects that may experience
-            // gravity forces, drag, or hit other objects, which can leak into the new
-            // grasping pose when the SwapGrasp is performed.
-            if (a.latestScheduledGraspPose.HasValue)
-            {
-                b.rigidbody.position = a.latestScheduledGraspPose.Value.position;
-                b.rigidbody.rotation = a.latestScheduledGraspPose.Value.rotation;
-            }
-            else
-            {
-                b.rigidbody.position = a.rigidbody.position;
-                b.rigidbody.rotation = a.rigidbody.rotation;
-            }
-
-            // Swap!
-            a.graspingController.SwapGrasp(b);
-
-            // Move A over to where B was, and for fun, let's give it B's motion as well.
-            a.rigidbody.position = bPose.position;
-            a.rigidbody.rotation = bPose.rotation;
-            a.rigidbody.velocity = bVel;
-            a.rigidbody.angularVelocity = bAngVel;
-        }
-
-        _swapScheduled = false;
+        foreach (var c in controllers)
+            c.SwapGrasp(toGrasping);
     }
 }

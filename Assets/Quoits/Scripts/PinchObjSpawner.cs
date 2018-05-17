@@ -71,7 +71,7 @@ public class PinchObjSpawner : MonoBehaviour
             }
         }
 
-           
+        
     }
 
     bool FindPinchingPair()

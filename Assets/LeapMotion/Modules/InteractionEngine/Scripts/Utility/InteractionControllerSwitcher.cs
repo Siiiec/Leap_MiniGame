@@ -12,6 +12,7 @@ using Leap.Unity.Interaction;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using Leap.Unity.Query;
 
 namespace Leap.Unity.Interaction {
 
