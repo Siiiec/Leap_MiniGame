@@ -842,37 +842,33 @@ namespace Leap.Unity.Interaction {
     [NonSerialized]
     public Dictionary<Rigidbody, PhysicsUtility.Velocities> _softContactOriginalVelocities = new Dictionary<Rigidbody, PhysicsUtility.Velocities>(5);
 
-        #endregion
+#endregion
 
-        #region Interaction Controllers
+#region Interaction Controllers
 
-        private void refreshInteractionControllers()
-        {
-            _interactionControllers.Clear();
+    private void refreshInteractionControllers() {
+      _interactionControllers.Clear();
 
-            var tempControllers = Pool<List<InteractionController>>.Spawn();
-            try
-            {
-                this.transform.GetComponentsInChildren<InteractionController>(false, tempControllers);
-                foreach (var controller in tempControllers)
-                {
-                    _interactionControllers.Add(controller);
-                }
-            }
-            finally
-            {
-                tempControllers.Clear();
-                Pool<List<InteractionController>>.Recycle(tempControllers);
-            }
+      var tempControllers = Pool<List<InteractionController>>.Spawn();
+      try {
+        this.transform.GetComponentsInChildren<InteractionController>(false, tempControllers);
+        foreach (var controller in tempControllers) {
+          _interactionControllers.Add(controller);
         }
+      }
+      finally {
+        tempControllers.Clear();
+        Pool<List<InteractionController>>.Recycle(tempControllers);
+      }
+    }
 
-        #endregion
+#endregion
 
-        #region Layers
+#region Layers
 
-        #region Automatic Layers
+#region Automatic Layers
 
-        protected void generateAutomaticLayers() {
+    protected void generateAutomaticLayers() {
       _interactionLayer = -1;
       _interactionNoContactLayer = -1;
       _contactBoneLayer = -1;
